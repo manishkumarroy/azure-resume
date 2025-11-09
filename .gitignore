@@ -1,0 +1,21 @@
+# === Terraform ===
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl.backup
+crash.log
+override.tf
+override.tf.json
+*.tfvars
+*.tfvars.json
+
+# === Terraform State Folder ===
+**/Terraform-State/.terraform/
+**/.terraform/
+
+# === Local environment files ===
+.env
+*.log
+
+# === VS Code ===
+.vscode/
