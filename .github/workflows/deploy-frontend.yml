@@ -1,5 +1,4 @@
 name: Deploy Frontend to Azure Blob Static Website
-
 on:
   push:
     branches:
