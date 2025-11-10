@@ -2,8 +2,7 @@ name: Deploy Frontend to Azure Blob Static Website
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
     paths:
       - 'frontend/**'  # optional – only triggers when frontend files change
 
