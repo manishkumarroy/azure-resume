@@ -1,0 +1,51 @@
+name: Deploy Frontend to Azure Blob Static Website
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'frontend/**'  # optional – only triggers when frontend files change
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+      AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Azure CLI
+        uses: azure/cli@v2
+        with:
+          inlineScript: |
+            az account show
+
+      - name: Verify frontend files
+        run: |
+          echo "Listing frontend files..."
+          ls -R frontend
+
+      # Uncomment this only if you have a build process (React, Angular, etc.)
+      # - name: Build project
+      #   run: |
+      #     cd frontend
+      #     npm install
+      #     npm run build
+
+      - name: Deploy to Azure Blob Static Website
+        run: |
+          az storage blob upload-batch \
+            --account-name $AZURE_STORAGE_ACCOUNT \
+            --account-key $AZURE_STORAGE_KEY \
+            -s ./frontend \
+            -d '$web' \
+            --overwrite
+
+      - name: Purge CDN (optional)
+        if: always()
+        run: echo "CDN purge step can be added later if using Azure CDN"
