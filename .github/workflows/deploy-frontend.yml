@@ -30,13 +30,6 @@ jobs:
           echo "Listing frontend files..."
           ls -R frontend
 
-      # Uncomment this only if you have a build process (React, Angular, etc.)
-      # - name: Build project
-      #   run: |
-      #     cd frontend
-      #     npm install
-      #     npm run build
-
       - name: Deploy to Azure Blob Static Website
         run: |
           az storage blob upload-batch \
