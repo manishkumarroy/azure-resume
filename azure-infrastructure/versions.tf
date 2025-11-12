@@ -8,6 +8,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.7.2"
     }
+    azuread = {
+      source  = "hashicorp/azuread"
+      version = "~> 3.1.0"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "rg-terraform-state"

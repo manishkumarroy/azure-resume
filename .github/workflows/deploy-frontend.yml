@@ -7,7 +7,7 @@ on:
       - 'frontend/**'   # Only triggers if files in frontend/ change
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     env:
@@ -18,17 +18,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Azure CLI
-        uses: azure/CLI@v1
+      - name: Azure Login
+        uses: azure/login@v2
         with:
-          inlineScript: |
-            az account show
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Verify frontend files
         run: |
           echo "Listing frontend files..."
           ls -R frontend
 
+      # ✅ Delete old website content first
+      - name: Delete previous content
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob delete-batch \
+              --account-name $AZURE_STORAGE_ACCOUNT \
+              --account-key $AZURE_STORAGE_KEY \
+              --source '$web'
+
+      # ✅ Then upload new frontend build
       - name: Deploy frontend to Azure Blob Static Website
         uses: azure/CLI@v1
         with:
@@ -39,14 +49,9 @@ jobs:
               -s ./frontend \
               -d '$web' \
               --overwrite
-
-      - name: Purge CDN endpoint (optional)
-        if: always()
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            echo "CDN purge step can be added later if using Azure CDN"
-
+              
       - name: Logout from Azure
         if: always()
         run: az logout
+
+      
