@@ -28,15 +28,6 @@ jobs:
           echo "Listing frontend files..."
           ls -R frontend
 
-      - name: Delete previous frontend content (optional)
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az storage blob delete-batch \
-              --account-name $AZURE_STORAGE_ACCOUNT \
-              --account-key $AZURE_STORAGE_KEY \
-              --source '$web'
-
       - name: Deploy frontend to Azure Blob Static Website
         uses: azure/CLI@v1
         with:
