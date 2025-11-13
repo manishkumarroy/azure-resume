@@ -28,7 +28,7 @@ jobs:
           echo "Listing frontend files..."
           ls -R frontend
 
-      # ✅ Delete old website content first
+      #Delete old website content first
       - name: Delete previous content
         uses: azure/CLI@v1
         with:
@@ -38,7 +38,7 @@ jobs:
               --account-key $AZURE_STORAGE_KEY \
               --source '$web'
 
-      # ✅ Then upload new frontend build
+      #Then upload new frontend build
       - name: Deploy frontend to Azure Blob Static Website
         uses: azure/CLI@v1
         with:
