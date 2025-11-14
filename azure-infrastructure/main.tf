@@ -96,3 +96,4 @@ resource "azurerm_linux_function_app" "main" {
 # test-trigger
 # test-trigger
 # test-trigger
+# test-trigger

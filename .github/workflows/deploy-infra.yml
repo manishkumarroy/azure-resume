@@ -32,7 +32,7 @@ jobs:
 
       - name: Terraform Plan
         working-directory: azure-infrastructure
-        run: terraform plan -refresh=false
+        run: terraform plan -lock=false -refresh=false
 
 
       # Auto-apply only if you want!
