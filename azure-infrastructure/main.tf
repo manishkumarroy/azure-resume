@@ -93,4 +93,3 @@ resource "azurerm_linux_function_app" "main" {
   }
 }
 
-
