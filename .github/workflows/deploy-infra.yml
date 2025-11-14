@@ -32,7 +32,8 @@ jobs:
 
       - name: Terraform Plan
         working-directory: azure-infrastructure
-        run: terraform plan
+        run: terraform plan -refresh=false
+
 
       # Auto-apply only if you want!
       #- name: Terraform Apply
