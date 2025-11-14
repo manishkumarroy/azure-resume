@@ -36,7 +36,6 @@ jobs:
 
       # Auto-apply only if you want!
       #- name: Terraform Apply
-        #if: github.ref == 'refs/heads/main'
         #working-directory: azure-infrastructure
         #run: terraform apply -auto-approve
 
