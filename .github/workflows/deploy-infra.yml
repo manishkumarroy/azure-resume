@@ -32,13 +32,13 @@ jobs:
 
       - name: Terraform Plan
         working-directory: azure-infrastructure
-        run: terraform plan -lock=false -refresh=false
+        run: terraform plan -refresh=false
 
 
       # Auto-apply only if you want!
-      #- name: Terraform Apply
-        #working-directory: azure-infrastructure
-        #run: terraform apply -auto-approve
+      - name: Terraform Apply
+        working-directory: azure-infrastructure
+        run: terraform apply -refresh=false -auto-approve
 
       - name: Logout from Azure
         if: always()
