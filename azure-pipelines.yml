@@ -30,16 +30,26 @@ steps:
   workingDirectory: backend/api
   displayName: 'Restore and Build'
 
-# Publish Azure Function (folder only, no zip)
+# Publish Azure Function
 - script: |
-    dotnet publish backend/api/api.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish
+    dotnet publish backend/api/api.csproj \
+      --configuration $(buildConfiguration) \
+      --output $(Build.ArtifactStagingDirectory)/publish \
+      --runtime linux-x64 \
+      --self-contained false
   displayName: 'Publish Azure Function'
 
-# Deploy to Azure Function App directly from folder
+# Create ZIP (Linux Consumption requires ZIP deployment)
+- script: |
+    cd $(Build.ArtifactStagingDirectory)/publish
+    zip -r ../artifact.zip .
+  displayName: 'Create deployment ZIP'
+
+# Deploy ZIP to Azure Function App
 - task: AzureFunctionApp@2
   inputs:
     azureSubscription: 'azure-resume-sp'
     appType: 'functionAppLinux'
     appName: 'cloud-resume-visitor-counter-api'
-    package: '$(Build.ArtifactStagingDirectory)/publish'
-  displayName: 'Deploy to Azure Function'
+    package: '$(Build.ArtifactStagingDirectory)/artifact.zip'
+  displayName: 'Deploy to Azure Function App'
