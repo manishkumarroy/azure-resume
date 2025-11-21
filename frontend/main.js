@@ -6,7 +6,7 @@ const localFunctionApi = 'http://localhost:7071/api/GetResumeCounter';
 
 const getVisitorCount = () =>{
     let count = 30
-    fetch(functionApi).then(response => {
+    fetch(functionApiUrl).then(response => {
         return response.json()
     }).then(response => {
         console.log("website called function API: ")
