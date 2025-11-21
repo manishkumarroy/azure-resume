@@ -1,0 +1,45 @@
+name: Terraform Infra Automation
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'azure-infrastructure/**'   # Trigger only if infra files change
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        working-directory: azure-infrastructure
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: azure-infrastructure
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: azure-infrastructure
+        run: terraform plan -refresh=false
+
+
+      # Auto-apply only if you want!
+      - name: Terraform Apply
+        working-directory: azure-infrastructure
+        run: terraform apply -refresh=false -auto-approve
+
+      - name: Logout from Azure
+        if: always()
+        run: az logout

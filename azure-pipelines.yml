@@ -1,0 +1,45 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - backend/**
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- checkout: self
+  clean: true
+
+# Install .NET 8 SDK
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '8.x'
+  displayName: 'Install .NET 8 SDK'
+
+# Restore and Build
+- script: |
+    dotnet restore
+    dotnet build --configuration $(buildConfiguration)
+  workingDirectory: backend/api
+  displayName: 'Restore and Build'
+
+# Publish Azure Function (folder only, no zip)
+- script: |
+    dotnet publish backend/api/api.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/publish --runtime linux-x64 --self-contained false
+  displayName: 'Publish Azure Function'
+
+# Deploy to Azure Function App directly from folder
+- task: AzureFunctionApp@2
+  inputs:
+    azureSubscription: 'azure-resume-sp'
+    appType: 'functionAppLinux'
+    appName: 'cloud-resume-visitor-counter-api'
+    package: '$(Build.ArtifactStagingDirectory)/publish'
+  displayName: 'Deploy to Azure Function'

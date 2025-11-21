@@ -1,0 +1,57 @@
+name: Deploy Frontend to Azure Blob Static Website
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'   # Only triggers if files in frontend/ change
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT_NAME }}
+      AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_ACCOUNT_KEY }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Verify frontend files
+        run: |
+          echo "Listing frontend files..."
+          ls -R frontend
+
+      #Delete old website content first
+      - name: Delete previous content
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob delete-batch \
+              --account-name $AZURE_STORAGE_ACCOUNT \
+              --account-key $AZURE_STORAGE_KEY \
+              --source '$web'
+
+      #Then upload new frontend build
+      - name: Deploy frontend to Azure Blob Static Website
+        uses: azure/CLI@v1
+        with:
+          inlineScript: |
+            az storage blob upload-batch \
+              --account-name $AZURE_STORAGE_ACCOUNT \
+              --account-key $AZURE_STORAGE_KEY \
+              -s ./frontend \
+              -d '$web' \
+              --overwrite
+              
+      - name: Logout from Azure
+        if: always()
+        run: az logout
+
+      
